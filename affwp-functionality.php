@@ -9,6 +9,7 @@
  */
 
 define( 'EDD_DISABLE_ARCHIVE', true );
+add_filter( 'edd_api_log_requests', '__return_false' );
 
 /**
  * Sends an email to myself whenever a customer shares their purchase to receive a discount. Just so I can keep on eye on if it's working.

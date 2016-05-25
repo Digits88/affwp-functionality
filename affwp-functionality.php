@@ -408,10 +408,11 @@ function affwp_grandfather_renewal_discount( $renewal_discount, $license_id ) {
 
 	$license = get_post( $license_id );
 
-	if( strtotime( $license->post_date ) < strtotime( 'April 18, 2016' ) ) {
-		$discount = 40;
+	if ( strtotime( $license->post_date ) < strtotime( 'April 18, 2016' ) ) {
+		$renewal_discount = 40;
 	}
 
-	return $discount;
+	return $renewal_discount;
+
 }
 add_filter( 'edd_sl_renewal_discount_percentage', 'affwp_grandfather_renewal_discount', 10, 2 );

@@ -408,7 +408,7 @@ function affwp_grandfather_renewal_discount( $renewal_discount, $license_id ) {
 
 	$license = get_post( $license_id );
 
-	if ( strtotime( $license->post_date ) < strtotime( 'April 18, 2016' ) ) {
+	if ( ! empty( $license_id ) && strtotime( $license->post_date ) < strtotime( 'April 18, 2016' ) ) {
 		$renewal_discount = 40;
 	}
 

@@ -52,6 +52,11 @@ function affwpcf_login_redirect( $user_login, $user ) {
 		return;
 	}
 
+	// don't redirect for survey
+	if ( isset( $_POST['survey'] ) && $_POST['survey'] ) {
+		return;
+	}
+
 	// skip EDD pages or if we came from the checkout
 	if ( ( edd_is_checkout() || edd_is_success_page() ) || wp_get_referer() == edd_get_checkout_uri() ) {
 		return;

@@ -421,3 +421,45 @@ function affwp_grandfather_renewal_discount( $renewal_discount, $license_id ) {
 
 }
 add_filter( 'edd_sl_renewal_discount_percentage', 'affwp_grandfather_renewal_discount', 10, 2 );
+
+/**
+ * GF Help Scout sub-domain
+ */
+function affwp_gf_helpscout_docs_subdomain() {
+	return 'affiliatewp';
+}
+add_filter( 'gf_helpscout_docs_subdomain', 'affwp_gf_helpscout_docs_subdomain' );
+
+/**
+ * GF Help Scout Settings
+ */
+function affwp_gf_helpscout_docs_script_settings( $settings ) {
+	$settings['searchDelay'] = 250;
+
+	return $settings;
+}
+add_filter( 'gf_helpscout_docs_script_settings', 'affwp_gf_helpscout_docs_script_settings' );
+
+/**
+ * GF Help Scout - Hide submit ticket button until results are listed
+ */
+function affwp_gf_helpscout_hide_button() {
+
+	if ( ! is_page( 'support' ) ) {
+		return;
+	}
+
+	?>
+	<script>
+	jQuery(document).ready( function($) {
+		jQuery('.gform_page_footer, .gfield.need-help').hide();
+	});
+
+	jQuery(document).ajaxComplete(function( event, xhr, settings ) {
+		jQuery('.gform_page_footer, .gfield.need-help').show();
+	});
+	</script>
+
+	<?php
+}
+add_action( 'wp_footer', 'affwp_gf_helpscout_hide_button' );

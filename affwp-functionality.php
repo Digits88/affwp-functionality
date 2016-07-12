@@ -346,13 +346,12 @@ add_action( 'do_feed_addons', 'affwp_addons_feed', 10, 1 );
 function affwp_feed_rewrite( $wp_rewrite ) {
 
 	$feed_rules = array(
-		'feed/(.+)' => 'index.php?feed=' . $wp_rewrite->preg_index( 1 ),
-		'(.+).xml'  => 'index.php?feed=' . $wp_rewrite->preg_index( 1 )
+		'feed/(.+)' => 'index.php?feed=' . $wp_rewrite->preg_index( 1 )
 	);
 
 	$wp_rewrite->rules = $feed_rules + $wp_rewrite->rules;
 }
-add_filter( 'generate_rewrite_rules', 'affwp_feed_rewrite' );
+add_action( 'generate_rewrite_rules', 'affwp_feed_rewrite' );
 
 /**
  * Alter the WordPress Query for the feed

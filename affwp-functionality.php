@@ -25,6 +25,11 @@ function affwpcf_login_redirect( $user_login, $user ) {
 		return;
 	}
 
+	// don't redirect for survey
+	if ( isset( $_POST['survey'] ) && $_POST['survey'] ) {
+		return;
+	}
+
 	// skip EDD pages or if we came from the checkout
 	if ( ( edd_is_checkout() || edd_is_success_page() ) || wp_get_referer() == edd_get_checkout_uri() ) {
 		return;
@@ -309,13 +314,12 @@ add_action( 'do_feed_addons', 'affwp_addons_feed', 10, 1 );
 function affwp_feed_rewrite( $wp_rewrite ) {
 
 	$feed_rules = array(
-		'feed/(.+)' => 'index.php?feed=' . $wp_rewrite->preg_index( 1 ),
-		'(.+).xml'  => 'index.php?feed=' . $wp_rewrite->preg_index( 1 )
+		'feed/(.+)' => 'index.php?feed=' . $wp_rewrite->preg_index( 1 )
 	);
 
 	$wp_rewrite->rules = $feed_rules + $wp_rewrite->rules;
 }
-add_filter( 'generate_rewrite_rules', 'affwp_feed_rewrite' );
+add_action( 'generate_rewrite_rules', 'affwp_feed_rewrite' );
 
 /**
  * Alter the WordPress Query for the feed
@@ -373,27 +377,13 @@ add_action( 'pre_get_posts', 'affwp_feed_query', 99999999 );
  * Sets renewal discount to 40% for any customer that purchased before April 18, 2016
  */
 function affwp_grandfather_renewal_discount( $renewal_discount, $license_id ) {
-
 	$license = get_post( $license_id );
-
-	if ( strtotime( $license->post_date ) < strtotime( 'April 18, 2016' ) ) {
-		$discount = 40;
+	if ( ! empty( $license_id ) && strtotime( $license->post_date ) < strtotime( 'April 18, 2016' ) ) {
+		$renewal_discount = 40;
 	}
-
-	return $discount;
+	return $renewal_discount;
 }
 add_filter( 'edd_sl_renewal_discount_percentage', 'affwp_grandfather_renewal_discount', 10, 2 );
-
-/**
- * Allow SVGs to be uploaded
- */
-function affwp_mime_types( $mimes ) {
-
-    $mimes['svg'] = 'image/svg+xml';
-    return $mimes;
-
-}
-add_filter( 'upload_mimes', 'affwp_mime_types' );
 
 /**
  * GF Help Scout sub-domain
@@ -402,7 +392,6 @@ function affwp_gf_helpscout_docs_subdomain() {
 	return 'affiliatewp';
 }
 add_filter( 'gf_helpscout_docs_subdomain', 'affwp_gf_helpscout_docs_subdomain' );
-
 
 /**
  * GF Help Scout Settings
@@ -418,17 +407,14 @@ add_filter( 'gf_helpscout_docs_script_settings', 'affwp_gf_helpscout_docs_script
  * GF Help Scout - Hide submit ticket button until results are listed
  */
 function affwp_gf_helpscout_hide_button() {
-
 	if ( ! is_page( 'support' ) ) {
 		return;
 	}
-
 	?>
 	<script>
 	jQuery(document).ready( function($) {
 		jQuery('.gform_page_footer, .gfield.need-help').hide();
 	});
-
 	jQuery(document).ajaxComplete(function( event, xhr, settings ) {
 		jQuery('.gform_page_footer, .gfield.need-help').show();
 	});
@@ -437,3 +423,14 @@ function affwp_gf_helpscout_hide_button() {
 	<?php
 }
 add_action( 'wp_footer', 'affwp_gf_helpscout_hide_button' );
+
+/**
+ * Allow SVGs to be uploaded
+ */
+function affwp_mime_types( $mimes ) {
+
+    $mimes['svg'] = 'image/svg+xml';
+    return $mimes;
+
+}
+add_filter( 'upload_mimes', 'affwp_mime_types' );

@@ -8,37 +8,10 @@
  * Version: 1.0
  */
 
+require_once( 'includes/post-types.php' );
+
 define( 'EDD_DISABLE_ARCHIVE', true );
 add_filter( 'edd_api_log_requests', '__return_false' );
-
-/**
- * Sends an email to myself whenever a customer shares their purchase to receive a discount. Just so I can keep on eye on if it's working.
- */
-function affwpcf_notify_when_purchase_shared() {
-	$subject = 'Customer shared purchase!';
-	$message = 'Looks like a customer has shared their purchase!';
-
-	wp_mail( 'andrew@affiliatewp.com', $subject, $message );
-}
-add_action( 'edd_purchase_rewards_after_share', 'affwpcf_notify_when_purchase_shared' );
-
-/**
- * Remove linkedin from purchase rewards plugin
- * LinkedIn's share event API is busted as of May 21st 2014
- */
-function affwpcf_eddpr_sharing_networks( $networks ) {
-
-	foreach ( $networks as $key => $network ) {
-	    if ( $key == 'linkedin' ) {
-	        $key = $key;
-	    }
-	}
-
-	unset( $networks[ $key ] );
-
-	return $networks;
-}
-add_filter( 'edd_purchase_rewards_sharing_networks', 'affwpcf_eddpr_sharing_networks' );
 
 /**
  * Redirect users when logging in via wp-login.php (aka wp-admin)
@@ -235,11 +208,6 @@ function affwp_remove_stuff() {
 }
 add_action( 'template_redirect', 'affwp_remove_stuff' );
 
-/**
- * EDD Purchase Rewards
- * Remove discount from appearing on the purchase confirmation page
- */
-add_filter( 'edd_purchase_rewards_show_discount_code', '__return_false' );
 
 
 /**
@@ -408,10 +376,64 @@ function affwp_grandfather_renewal_discount( $renewal_discount, $license_id ) {
 
 	$license = get_post( $license_id );
 
-	if( strtotime( $license->post_date ) < strtotime( 'April 18, 2016' ) ) {
+	if ( strtotime( $license->post_date ) < strtotime( 'April 18, 2016' ) ) {
 		$discount = 40;
 	}
 
 	return $discount;
 }
 add_filter( 'edd_sl_renewal_discount_percentage', 'affwp_grandfather_renewal_discount', 10, 2 );
+
+/**
+ * Allow SVGs to be uploaded
+ */
+function affwp_mime_types( $mimes ) {
+
+    $mimes['svg'] = 'image/svg+xml';
+    return $mimes;
+
+}
+add_filter( 'upload_mimes', 'affwp_mime_types' );
+
+/**
+ * GF Help Scout sub-domain
+ */
+function affwp_gf_helpscout_docs_subdomain() {
+	return 'affiliatewp';
+}
+add_filter( 'gf_helpscout_docs_subdomain', 'affwp_gf_helpscout_docs_subdomain' );
+
+
+/**
+ * GF Help Scout Settings
+ */
+function affwp_gf_helpscout_docs_script_settings( $settings ) {
+	$settings['searchDelay'] = 250;
+
+	return $settings;
+}
+add_filter( 'gf_helpscout_docs_script_settings', 'affwp_gf_helpscout_docs_script_settings' );
+
+/**
+ * GF Help Scout - Hide submit ticket button until results are listed
+ */
+function affwp_gf_helpscout_hide_button() {
+
+	if ( ! is_page( 'support' ) ) {
+		return;
+	}
+
+	?>
+	<script>
+	jQuery(document).ready( function($) {
+		jQuery('.gform_page_footer, .gfield.need-help').hide();
+	});
+
+	jQuery(document).ajaxComplete(function( event, xhr, settings ) {
+		jQuery('.gform_page_footer, .gfield.need-help').show();
+	});
+	</script>
+
+	<?php
+}
+add_action( 'wp_footer', 'affwp_gf_helpscout_hide_button' );

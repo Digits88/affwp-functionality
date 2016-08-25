@@ -1,5 +1,7 @@
 <?php
 
+/* Exit if accessed directly. */
+if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
  * Register an integration post type.
@@ -110,10 +112,6 @@ function affwpcf_integration_taxonomies() {
 }
 add_action( 'init', 'affwpcf_integration_taxonomies', 0 );
 
-
-
-
-
 /**
  * Change ‘Enter Title Here’ text for the Testimonial.
  */
@@ -128,99 +126,6 @@ function affwpcf_change_default_title( $title ) {
 
 }
 add_filter( 'enter_title_here', 'affwpcf_change_default_title' );
-
-
-/**
- * Add metabox
- */
-function affwpcf_testimonials_meta_box() {
-
-	add_meta_box(
-		'affwp_testimonials_metabox',
-		esc_html__( 'Testimonial Meta', 'affiliatewp-functionality' ),
-		'affwpcf_testimonials_fields',
-		'testimonial',
-		'side'
-	);
-
-}
-add_action( 'add_meta_boxes', 'affwpcf_testimonials_meta_box' );
-
-/**
- *
- */
-function affwpcf_testimonials_fields() {
-
-	$company = get_post_meta( get_the_ID(), '_affwp_testimonial_company', true );
-
-	?>
-
-	<p><strong><?php _e( 'Company', 'affiliatewp-functionality' ); ?></strong></p>
-	<p>
-		<label for="affwp-testimonial-company" class="screen-reader-text">
-			<?php _e( 'Company', 'affiliatewp-functionality' ); ?>
-		</label>
-		<input class="widefat" type="text" name="affwp_testimonial_company" id="affwp-testimonial-company" value="<?php echo esc_attr( $company ); ?>" size="30" />
-	</p>
-
-	<?php wp_nonce_field( 'affwp_testimonial_meta', 'affwp_testimonial_meta' ); ?>
-
-	<?php
-}
-
-/**
- * Update the menu_order when a testimonial is saved, based on the word count
- *
- * @since 1.0.0
-*/
-function affwpcf_save_testimonial( $post_id ) {
-
-	if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || ( defined( 'DOING_AJAX') && DOING_AJAX ) || isset( $_REQUEST['bulk_edit'] ) ) {
-		return;
-	}
-
-	if ( ! isset( $_POST['affwp_testimonial_meta'] ) || ! wp_verify_nonce( $_POST['affwp_testimonial_meta'], 'affwp_testimonial_meta' ) ) {
-		return;
-	}
-
-	if ( ( isset( $_POST['post_type'] ) && 'testimonial' == $_POST['post_type'] )  ) {
-
-		if ( ! current_user_can( 'edit_page', $post_id ) ) {
-			return;
-		}
-
-	} else {
-
-		if ( ! current_user_can( 'edit_post', $post_id ) ) {
-			return;
-		}
-
-	}
-
-	if ( isset( $post->post_type ) && 'revision' == $post->post_type ) {
-		return;
-	}
-
-	$company = ! empty( $_POST['affwp_testimonial_company'] ) ? sanitize_text_field( $_POST['affwp_testimonial_company'] ) : '';
-
-	if ( $company ) {
-		update_post_meta( $post_id, '_affwp_testimonial_company', $company );
-	} else {
-		delete_post_meta( $post_id, '_affwp_testimonial_company' );
-	}
-
-    remove_action( 'save_post', 'affwpcf_save_testimonial' );
-
-	$content = $_POST['post_content'];
-
-	$word_count = str_word_count( $content );
-
-    wp_update_post( array( 'ID' => $post_id, 'menu_order' => $word_count ) );
-
-    add_action( 'save_post', 'affwpcf_save_testimonial' );
-
-}
-add_action( 'save_post', 'affwpcf_save_testimonial' );
 
 /**
  * Order integrations and testimonials by menu order
@@ -243,3 +148,5 @@ function affwpcf_order_integrations( $query ) {
 
 }
 add_action( 'pre_get_posts', 'affwpcf_order_integrations' );
+
+require_once( 'meta-boxes.php' );

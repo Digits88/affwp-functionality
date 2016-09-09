@@ -434,3 +434,13 @@ function affwp_mime_types( $mimes ) {
 
 }
 add_filter( 'upload_mimes', 'affwp_mime_types' );
+
+/**
+ * Show the SVG preview in the admin Featured Image metabox
+ */
+function affwpcf_custom_admin_styles() {
+	?>
+	<style>	#set-post-thumbnail{ display: block; }
+	<?php
+}
+add_action( 'admin_head', 'affwpcf_custom_admin_styles' );

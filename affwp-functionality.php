@@ -359,7 +359,7 @@ function affwp_feed_query( $query ) {
 				array(
 					'taxonomy' => 'download_category',
 					'field'    => 'slug',
-					'terms'    => 'pro-add-ons'
+					'terms'    => 'pro'
 				)
 			);
 		}

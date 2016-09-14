@@ -446,68 +446,13 @@ function affwpcf_custom_admin_styles() {
 add_action( 'admin_head', 'affwpcf_custom_admin_styles' );
 
 /**
- * Get cookie
+ * Remove the Jetpack menu for non admins
  */
-function affwpcf_get_theme_cookie() {
-	$theme = isset( $_COOKIE['affwp_theme'] ) ? sanitize_text_field( $_COOKIE['affwp_theme'] ) : '';
+function affwpcf_hide_jetpack_menu() {
 
-	if ( $theme ) {
-		return (string) $theme;
-	}
-
-	return false;
-}
-
-/**
- * Switch theme
- */
-function affwpcf_template( $template ) {
-
-	if ( ! is_admin() && current_user_can( 'manage_options' ) && 'new' === affwpcf_get_theme_cookie() ) {
-		$template = 'themedd';
-	}
-
-	return $template;
-}
-
-/**
- * Switch stylesheet
- */
-function affwpcf_stylesheet( $stylesheet ) {
-
-	if ( ! is_admin() && current_user_can( 'manage_options' ) && 'new' === affwpcf_get_theme_cookie() ) {
-		$stylesheet = 'affiliatewp';
-	}
-
-	return $stylesheet;
-}
-
-/**
- * Set cookie
- */
-function affwpcf_set_theme_cookie() {
-
-	$expire = time() + 30000000;
-
-	// set cookie
-	if ( ! empty( $_GET['theme'] ) && 'new' === $_GET['theme'] && current_user_can( 'manage_options' ) ) {
-		setcookie( 'affwp_theme', 'new', $expire, COOKIEPATH, COOKIE_DOMAIN );
-
-		$redirect = remove_query_arg('theme');
-		wp_redirect( $redirect );
-		exit;
+	if ( ! current_user_can( 'manage_options' ) ) {
+		remove_menu_page( 'jetpack' );
 	}
 
 }
-add_action( 'init', 'affwpcf_set_theme_cookie' );
-
-/**
- * Theme switcher
- */
-function affwpcf_theme_switcher() {
-
-	add_filter( 'stylesheet', 'affwpcf_stylesheet' );
-	add_filter( 'template', 'affwpcf_template' );
-
-}
-add_action( 'setup_theme', 'affwpcf_theme_switcher' );
+add_action( 'jetpack_admin_menu', 'affwpcf_hide_jetpack_menu' );

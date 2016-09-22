@@ -301,3 +301,24 @@ function affwpcf_save_integration( $post_id, $post ) {
 
 }
 add_action( 'save_post', 'affwpcf_save_integration', 10, 2 );
+
+/**
+ * Loads the new Featured Icon metabox
+ * Requires the Multi Post Thumbnails plugin
+ */
+function affwpcf_admin_load_mpt() {
+
+    if ( class_exists( 'MultiPostThumbnails' ) ) {
+
+        new MultiPostThumbnails(
+            array(
+                'label'     => 'Featured Icon',
+                'id'        => 'feature-icon',
+                'post_type' => 'post'
+            )
+        );
+		
+    }
+
+}
+add_action( 'wp_loaded', 'affwpcf_admin_load_mpt' );

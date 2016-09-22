@@ -440,7 +440,16 @@ add_filter( 'upload_mimes', 'affwp_mime_types' );
  */
 function affwpcf_custom_admin_styles() {
 	?>
-	<style>	#set-post-thumbnail{ display: block; }
+	<style>
+	#set-post-thumbnail{ display: block; }
+	img.mpt-thumbnail {
+		width: auto;
+	    background-image: linear-gradient(45deg, #c4c4c4 25%, transparent 25%, transparent 75%, #c4c4c4 75%, #c4c4c4), linear-gradient(45deg, #c4c4c4 25%, transparent 25%, transparent 75%, #c4c4c4 75%, #c4c4c4);
+	    background-position: 0 0px, 10px 10px;
+	    background-size: 20px 20px;
+	    vertical-align: top;
+	}
+	</style>
 	<?php
 }
 add_action( 'admin_head', 'affwpcf_custom_admin_styles' );

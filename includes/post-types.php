@@ -143,6 +143,9 @@ function affwpcf_order_integrations( $query ) {
             $query->set( 'order', 'ASC' );
 			$query->set( 'posts_per_page', -1 );
 
+			if ( current_user_can( 'manage_options' ) ) {
+				$query->set( 'post_status', array( 'pending', 'draft', 'future', 'publish' ) );
+			}
         }
 
     }

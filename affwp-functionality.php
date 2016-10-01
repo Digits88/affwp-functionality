@@ -465,3 +465,15 @@ function affwpcf_hide_jetpack_menu() {
 
 }
 add_action( 'jetpack_admin_menu', 'affwpcf_hide_jetpack_menu' );
+
+/**
+ * Show draft pages in the pages dropdown
+ */
+function affwpcf_show_draft_pages( $dropdown_args, $post ) {
+
+	$dropdown_args['post_status'] = array( 'publish', 'draft' );
+
+	return $dropdown_args;
+
+}
+add_filter( 'page_attributes_dropdown_pages_args', 'affwpcf_show_draft_pages', 10, 2 );

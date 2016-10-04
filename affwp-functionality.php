@@ -46,7 +46,7 @@ function affwpcf_login_redirect( $user_login, $user ) {
 
 	wp_redirect( $redirect ); exit;
 }
-add_action( 'wp_login', 'affwpcf_login_redirect', 10, 2 );
+//add_action( 'wp_login', 'affwpcf_login_redirect', 10, 2 );
 
 /**
  * Redirect affiliates and customers when they log out of WordPress

@@ -14,71 +14,58 @@ define( 'EDD_DISABLE_ARCHIVE', true );
 add_filter( 'edd_api_log_requests', '__return_false' );
 
 /**
- * Redirect users when logging in via wp-login.php (aka wp-admin)
- * This also includes /account or /account/affiliates
+ * Hide the admin bar for non admins
+ * Customers can logout or edit profile from their /account page
  */
-function affwpcf_login_redirect( $user_login, $user ) {
-	$user_id = $user->ID;
+function affwpcf_admin_bar( $show ) {
 
-	// skip admins
-	if ( in_array( 'administrator', $user->roles ) ) {
-		return;
+	if ( ! current_user_can( 'manage_options' ) ) {
+		$show = false;
 	}
 
-	// don't redirect for survey
-	if ( isset( $_POST['survey'] ) && $_POST['survey'] ) {
-		return;
-	}
+	return $show;
 
-	// skip EDD pages or if we came from the checkout
-	if ( ( edd_is_checkout() || edd_is_success_page() ) || wp_get_referer() == edd_get_checkout_uri() ) {
-		return;
-	}
-
-	// Affiliates should go to affiliate area
-	if ( function_exists( 'affwp_is_affiliate' ) && affwp_is_affiliate( $user_id ) ) {
-		$redirect = affiliate_wp()->login->get_login_url();
-	}
-	// Customers should go to account page
-	else {
-		$redirect = site_url( '/account' );
-	}
-
-	wp_redirect( $redirect ); exit;
 }
-//add_action( 'wp_login', 'affwpcf_login_redirect', 10, 2 );
+add_filter( 'show_admin_bar', 'affwpcf_admin_bar' );
 
 /**
- * Redirect affiliates and customers when they log out of WordPress
- * By default, a user is sent to the wp-login.php?loggedout=true page
+ * Redirect user after successful login.
  *
- * Affiliates are logged out to the affiliate dashboard login screen
- * Customers (subscribers) are logged out and redirected to the account login page
+ * @param string $redirect_to URL to redirect to.
+ * @param string $request URL the user is coming from.
+ * @param object $user Logged user's data.
+ * @return string
  */
-function affwpcf_logout_redirect( $logout_url, $redirect ) {
+function affwpcf_login_redirect( $redirect_to, $request, $user ) {
 
-	if ( current_user_can( 'manage_options' ) ) {
-		// skip admins
-		return $logout_url;
-	}
-
-	if ( function_exists( 'affwp_is_affiliate' ) && affwp_is_affiliate() ) {
-		// redirect affiliates to affiliate login page
-		$redirect = affiliate_wp()->login->get_login_url();
+	//is there a user to check?
+	if ( isset( $user->roles ) && is_array( $user->roles ) ) {
+		//check for admins
+		if ( in_array( 'administrator', $user->roles ) ) {
+			// redirect them to the default place
+			return $redirect_to;
+		} else {
+			return site_url( '/account' );
+		}
 	} else {
-		// Customers should go to account login page
-		$redirect = site_url( '/account' );
+		return $redirect_to;
 	}
 
-	$args = array( 'action' => 'logout' );
-
-	if ( ! empty( $redirect ) ) {
-		$args['redirect_to'] = urlencode( $redirect );
-	}
-
-    return add_query_arg( $args, $logout_url );
 }
-add_filter( 'logout_url', 'affwpcf_logout_redirect', 10, 2 );
+add_filter( 'login_redirect', 'affwpcf_login_redirect', 10, 3 );
+
+
+/**
+ * Redirect customers to their account page if they try and access /wp-admin
+ */
+function affwpcf_block_admin_access() {
+
+	if ( is_admin() && is_user_logged_in() && ! current_user_can( 'manage_options' ) && ! defined( 'DOING_AJAX' ) ) {
+		wp_redirect( site_url( '/account' ) ); exit;
+    }
+
+}
+add_action( 'admin_init', 'affwpcf_block_admin_access' );
 
 /**
  * Add AffiliateWP logo to wp-login.php page

@@ -200,52 +200,6 @@ function affwp_remove_stuff() {
 }
 add_action( 'template_redirect', 'affwp_remove_stuff' );
 
-
-
-/**
- * Let the customer know the discount was successfully applied
- */
-function affwp_custom_discount_successful() {
-
-	$discount = isset( $_GET['discount'] ) && $_GET['discount'] ? $_GET['discount'] : '';
-
-	$link  = false;
-	$class = '';
-
-	// remove link and change message on account page because they will be upgrading etc
-	if ( is_page( 'account' ) ) {
-		$text  = 'Woohoo! Your discount was successfully added to checkout.';
-	} else {
-		$text  = 'Woohoo! Your discount was successfully added to checkout. Purchase AffiliateWP now &rarr;';
-		$link  = true;
-		$class = ' link';
-	}
-
-	if ( ! $discount ) {
-		return;
-	}
-
-	?>
-	<div id="notification-area" class="discount-applied<?php echo $class; ?>">
-		<div id="notice-content">
-
-		<?php if ( $link ) : ?>
-			<a href="/pricing">
-		<?php endif; ?>
-			<svg id="announcement" width="32px" height="32px">
-			   <use xlink:href="<?php echo get_stylesheet_directory_uri() . '/images/svg-defs.svg#icon-thumbs-up'; ?>"></use>
-			</svg>
-			<p><strong><?php echo $text; ?></strong></p>
-		<?php if ( $link ) : ?>
-			</a>
-		<?php endif; ?>
-
-		</div>
-	</div>
-		<?php
-}
-add_action( 'affwp_site_before', 'affwp_custom_discount_successful' );
-
 /**
  * Prevent Discounts on Renewals
  */

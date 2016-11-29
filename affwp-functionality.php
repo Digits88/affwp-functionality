@@ -432,4 +432,4 @@ function affwpcf_edd_auto_apply_discount() {
 
 	}
 }
-add_action( 'template_redirect', 'affwpcf_edd_auto_apply_discount' );
+//add_action( 'template_redirect', 'affwpcf_edd_auto_apply_discount' );

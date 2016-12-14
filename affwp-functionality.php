@@ -433,3 +433,29 @@ function affwpcf_edd_auto_apply_discount() {
 	}
 }
 //add_action( 'template_redirect', 'affwpcf_edd_auto_apply_discount' );
+
+
+/*
+ * Add download link to REST API response for free products
+ */
+function affwpcf_rest_free_download_link( $product_data ) {
+
+	$cats = (array) $product_data['info']['category'];
+
+	if( edd_is_free_download( $product_data['info']['id'] ) ) {
+
+		foreach( $cats as $cat ) {
+			if( 'official-free' == $cat->slug ) {
+				foreach ( edd_get_download_files( $product_data['info']['id'] ) as $file ) {
+					$product_data['files'][] = $file;
+				}
+
+				break;
+			}
+		}
+
+	}
+
+	return $product_data;
+}
+add_filter( 'edd_api_products_product_v2', 'affwpcf_rest_free_download_link' );

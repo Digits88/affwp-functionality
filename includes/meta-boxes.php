@@ -30,6 +30,17 @@ function affwpcf_meta_boxes() {
 		'side'
 	);
 
+	/**
+	 * Integrations metabox on single downloads
+	 */
+	add_meta_box(
+		'affwpcf_integrations_how_it_works_metabox',
+		esc_html__( 'How it works', 'affiliatewp-functionality' ),
+		'affwpcf_integrations_how_it_works_metabox',
+		'integration',
+		'normal'
+	);
+
 }
 add_action( 'add_meta_boxes', 'affwpcf_meta_boxes' );
 
@@ -317,8 +328,67 @@ function affwpcf_admin_load_mpt() {
                 'post_type' => 'post'
             )
         );
-		
+
     }
 
 }
 add_action( 'wp_loaded', 'affwpcf_admin_load_mpt' );
+
+
+/* When the post is saved, saves our custom data */
+
+/**
+ * Save integration data
+ *
+ * @since 1.0.0
+ */
+function affwpcf_save_integration_how_it_works( $post_id ) {
+
+	// verify if this is an auto save routine.
+	// If it is our form has not been submitted, so we dont want to do anything
+	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+		return;
+	}
+
+	// verify this came from the our screen and with proper authorization,
+	// because save_post can be triggered at other times
+	if ( ( isset ( $_POST['affwp_integration_how_it_works'] ) ) && ( ! wp_verify_nonce( $_POST['affwp_integration_how_it_works'], plugin_basename( __FILE__ ) ) ) ) {
+		return;
+	}
+
+	// Check permissions
+	if ( ( isset ( $_POST['post_type'] ) ) && ( 'page' == $_POST['post_type'] )  ) {
+
+		if ( ! current_user_can( 'edit_page', $post_id ) ) {
+			return;
+		}
+
+	} else {
+
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			return;
+		}
+
+	}
+
+	// OK, we're authenticated: we need to find and save the data
+	if ( isset ( $_POST['_affwp_integration_how_it_works'] ) ) {
+		update_post_meta( $post_id, '_affwp_integration_how_it_works', $_POST['_affwp_integration_how_it_works'] );
+	}
+
+}
+add_action( 'save_post', 'affwpcf_save_integration_how_it_works' );
+
+/**
+ * Show the editor
+ */
+function affwpcf_integrations_how_it_works_metabox( $post ) {
+
+	// Use nonce for verification
+	wp_nonce_field( plugin_basename( __FILE__ ), 'affwp_integration_how_it_works' );
+
+	$field_value = get_post_meta( $post->ID, '_affwp_integration_how_it_works', true );
+
+	wp_editor( $field_value, '_affwp_integration_how_it_works' );
+
+}

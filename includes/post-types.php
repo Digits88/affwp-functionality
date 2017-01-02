@@ -86,6 +86,9 @@ add_action( 'init', 'affwpcf_custom_post_types' );
 
 function affwpcf_integration_taxonomies() {
 
+	/**
+	 * Feature
+	 */
 	$labels = array(
 		'name'              => _x( 'Features', 'taxonomy general name' ),
 		'singular_name'     => _x( 'Feature', 'taxonomy singular name' ),
@@ -110,6 +113,35 @@ function affwpcf_integration_taxonomies() {
 	);
 
 	register_taxonomy( 'feature', array( 'integration' ), $args );
+
+	/**
+	 * Type
+	 */
+	$labels = array(
+		'name'              => _x( 'Types', 'taxonomy general name' ),
+		'singular_name'     => _x( 'Type', 'taxonomy singular name' ),
+		'search_items'      => __( 'Search Types' ),
+		'all_items'         => __( 'All Types' ),
+		'parent_item'       => __( 'Parent Type' ),
+		'parent_item_colon' => __( 'Parent Type:' ),
+		'edit_item'         => __( 'Edit Type' ),
+		'update_item'       => __( 'Update Type' ),
+		'add_new_item'      => __( 'Add New Type' ),
+		'new_item_name'     => __( 'New Type Name' ),
+		'menu_name'         => __( 'Type' ),
+	);
+
+	$args = array(
+		'hierarchical'      => true,
+		'labels'            => $labels,
+		'show_ui'           => true,
+		'show_admin_column' => true,
+		'query_var'         => true,
+		'rewrite'           => array( 'slug' => 'integrations/type' ), // e.g. /integrations/ecommerce
+	);
+
+	register_taxonomy( 'type', array( 'integration' ), $args );
+
 }
 add_action( 'init', 'affwpcf_integration_taxonomies', 0 );
 

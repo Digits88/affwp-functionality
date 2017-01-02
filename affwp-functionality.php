@@ -60,7 +60,7 @@ add_filter( 'login_redirect', 'affwpcf_login_redirect', 10, 3 );
  */
 function affwpcf_block_admin_access() {
 
-	if ( is_admin() && is_user_logged_in() && ! current_user_can( 'manage_options' ) && ! defined( 'DOING_AJAX' ) ) {
+	if ( is_admin() && is_user_logged_in() && ! current_user_can( 'edit_products' ) && ! defined( 'DOING_AJAX' ) ) {
 		wp_redirect( site_url( '/account' ) ); exit;
     }
 

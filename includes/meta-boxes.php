@@ -329,6 +329,14 @@ function affwpcf_admin_load_mpt() {
             )
         );
 
+		new MultiPostThumbnails(
+            array(
+                'label'     => 'Download Icon',
+                'id'        => 'feature-icon',
+                'post_type' => 'download'
+            )
+        );
+
     }
 
 }

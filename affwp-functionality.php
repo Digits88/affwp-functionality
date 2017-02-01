@@ -39,6 +39,9 @@ function affwpcf_maybe_start_session( $start_session ) {
 	if( ! empty( $_REQUEST['edd_action'] ) && in_array( $_REQUEST['edd_action'], $to_skip ) ) {
 		$start_session = false;
 	}
+	if( ( ! empty( $_REQUEST['edd_action'] ) && ! in_array( $_REQUEST['edd_action'], $to_skip ) ) || ! empty( $_GET['discount'] ) ) {
+		$start_session = true;
+	}
 	return $start_session;
 }
 add_filter( 'edd_start_session', 'affwpcf_maybe_start_session', 10, 1 );

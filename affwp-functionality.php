@@ -20,15 +20,15 @@ add_filter( 'edd_api_log_requests', '__return_false' );
  * @return bool
  */
 function affwpcf_maybe_start_session( $start_session ) {
+
 	if ( '/' == $_SERVER['REQUEST_URI'] ) {
 		$start_session = false;
 	}
-	if( false !== strpos( $_SERVER['REQUEST_URI'], '/add-ons' ) && '/add-ons/' === trailingslashit( $_SERVER['REQUEST_URI'] ) ) {
+
+	if( false === strpos( $_SERVER['REQUEST_URI'], '/checkout' ) ) {
 		$start_session = false;
 	}
-	if( empty( $_REQUEST['edd_action'] ) && false === strpos( $_SERVER['REQUEST_URI'], '/add-ons' ) ) {
-	//	$start_session = false;
-	}
+
 	$to_skip = array(
 		'activate_license',
 		'deactivate_license',

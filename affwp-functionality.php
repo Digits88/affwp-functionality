@@ -21,6 +21,10 @@ add_filter( 'edd_api_log_requests', '__return_false' );
  */
 function affwpcf_maybe_start_session( $start_session ) {
 
+	if( defined( "DOING_AJAX" ) && DOING_AJAX ) {
+                return $start_session;
+        }
+	
 	if ( '/' == $_SERVER['REQUEST_URI'] ) {
 		$start_session = false;
 	}

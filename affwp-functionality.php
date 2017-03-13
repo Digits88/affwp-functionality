@@ -9,6 +9,7 @@
  */
 
 require_once( 'includes/post-types.php' );
+require_once( 'includes/discounts.php' );
 
 define( 'EDD_DISABLE_ARCHIVE', true );
 add_filter( 'edd_api_log_requests', '__return_false' );
@@ -181,12 +182,6 @@ add_filter( 'comments_open', 'affwp_custom_remove_comments_on_attachments', 10 ,
  * Removes styling from Better Click To Tweet plugin
  */
 function affwp_remove_stuff() {
-
-	/**
-	 * Remove the Discount field
-	 * Discounts can only be applied using ?discount=code
-	 */
-	remove_action( 'edd_checkout_form_top', 'edd_discount_field', -1 );
 
 	/**
 	 * Removes styling from Better click to tweet plugin
@@ -374,7 +369,7 @@ function affwp_mime_types( $mimes ) {
     return $mimes;
 
 }
-//add_filter( 'upload_mimes', 'affwp_mime_types' );
+add_filter( 'upload_mimes', 'affwp_mime_types' );
 
 /**
  * Patch to get SVGs working in 4.7.1

@@ -91,7 +91,7 @@ function affwpcf_is_current_sale() {
 	foreach ( $sale_discounts as $discount_id ) {
 
 		if (
-			edd_is_discount_started( $discount_id ) &&                  // make sure discount has started
+			edd_is_discount_started( $discount_id, false ) &&           // make sure discount has started, don't set error at checkout
 			! empty ( edd_get_discount_start_date( $discount_id ) ) &&  // make sure discount has a start date
 			! empty ( edd_get_discount_expiration( $discount_id ) ) &&  // make sure discount has an expiration date
 			edd_is_discount_active( $discount_id ) &&                   // make sure discount is active

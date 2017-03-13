@@ -25,7 +25,7 @@ function affwpcf_maybe_start_session( $start_session ) {
 	if( defined( "DOING_AJAX" ) && DOING_AJAX ) {
                 return $start_session;
         }
-	
+
 	if ( '/' == $_SERVER['REQUEST_URI'] ) {
 		$start_session = false;
 	}
@@ -407,20 +407,6 @@ function affwp_mime_types( $mimes ) {
 
 }
 add_filter( 'upload_mimes', 'affwp_mime_types' );
-
-/**
- * Patch to get SVGs working in 4.7.1
- * Can remove after 4.7.2
- * https://core.trac.wordpress.org/ticket/39550
- * https://core.trac.wordpress.org/ticket/39552
- */
-add_filter( 'wp_check_filetype_and_ext', function($filetype_ext_data, $file, $filename, $mimes) {
-	if ( substr($filename, -4) === '.svg' ) {
-		$filetype_ext_data['ext'] = 'svg';
-		$filetype_ext_data['type'] = 'image/svg+xml';
-	}
-	return $filetype_ext_data;
-}, 100, 4 );
 
 /**
  * Show the SVG preview in the admin Featured Image metabox

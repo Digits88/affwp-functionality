@@ -97,7 +97,7 @@ function affwpcf_is_current_sale() {
 			edd_is_discount_active( $discount_id ) &&                   // make sure discount is active
 			! edd_is_discount_expired( $discount_id )                   // make sure discount has not expired
 		) {
-			return true;
+			return $discount_id;
 		}
 
 	}

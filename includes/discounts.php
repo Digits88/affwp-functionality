@@ -123,7 +123,7 @@ function affwpcf_show_discount_field() {
 		// Add new discount field.
 		add_action( 'edd_checkout_form_top', 'affwpcf_edd_discount_field', -1 );
 		// Add JS to auto show the discount field.
-		add_action( 'wp_footer', 'affwpcf_edd_discount_field_js' );
+		add_action( 'wp_footer', 'affwpcf_edd_discount_field_js', 100 );
 	}
 
 }
